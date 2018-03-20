@@ -12,7 +12,7 @@ define $(package)_preprocess_cmds
 endef
 
 define $(package)_build_cmds
-  cargo build --release
+  cargo build --frozen --release
 endef
 
 define $(package)_stage_cmds
