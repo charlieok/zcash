@@ -42,11 +42,6 @@ cd $($(1)_staging_prefix_dir)/$(CRATE_REGISTRY)/$($(1)_crate_versioned_name) && 
 rm -r `basename $($(1)_patch_dir)` .stamp_* .$($(1)_file_name).hash
 endef
 
-define configure_crate_registry
-mkdir .cargo && \
-echo "[source.vendored-sources]\ndirectory = \"$(host_prefix)/$(CRATE_REGISTRY)\"\n\n[source.crates-io]\nreplace-with = \"vendored-sources\"" > .cargo/config
-endef
-
 define int_get_build_recipe_hash
 $(eval $(1)_all_file_checksums:=$(shell $(build_SHA256SUM) $(meta_depends) packages/$(1).mk $(addprefix $(PATCHES_PATH)/$(1)/,$($(1)_patches)) | cut -d" " -f1))
 $(eval $(1)_recipe_hash:=$(shell echo -n "$($(1)_all_file_checksums)" | $(build_SHA256SUM) | cut -d" " -f1))
