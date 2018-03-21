@@ -10,8 +10,7 @@ $(package)_patches=cargo.config
 
 define $(package)_preprocess_cmds
   mkdir .cargo && \
-  cp $($(package)_patch_dir)/cargo.config .cargo/config && \
-  sed -i 's|CRATE_REGISTRY|$(host_prefix)/$(CRATE_REGISTRY)|' .cargo/config
+  cat $($(package)_patch_dir)/cargo.config | sed 's|CRATE_REGISTRY|$(host_prefix)/$(CRATE_REGISTRY)|' > .cargo/config
 endef
 
 define $(package)_build_cmds
