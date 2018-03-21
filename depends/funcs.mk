@@ -32,7 +32,7 @@ endef
 
 define generate_crate_checksum
 rm .gitignore && \
-echo "{\"files\":{`find . -type f | grep -v "$($(1)_file_name)" | grep -v .stamp_ | sed 's|^./||' | sort | xargs $(build_SHA256SUM) | awk -v OFS='":"' '{print $$$$2, $$$$1}' | sed 's|^|"|' | sed 's|$|"|' | tr '\n' ',' | sed 's|,$$$$||'`},\"package\":\"$($(1)_sha256_hash)\"}" > .cargo-checksum.json
+$(BASEDIR)/cargo-checksum.sh "$($(1)_file_name)" "$(build_SHA256SUM)" "$($(1)_sha256_hash)"
 endef
 
 define vendor_crate_source
