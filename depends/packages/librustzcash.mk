@@ -8,7 +8,8 @@ $(package)_git_commit=f5e5cb24e1bd756a02fc4a3fd2b824238ccd15ad
 $(package)_dependencies=rust $(rust_crates)
 $(package)_patches=cargo.config
 
-ifeq ($(host_os),mingw32)
+# if host_os equals either 'mingw32' or 'mingw64'
+ifeq ($(host_os),$(filter $(host_os),mingw32 mingw64))
 $(package)_library_file=target/x86_64-pc-windows-gnu/release/rustzcash.lib
 else
 $(package)_library_file=target/release/librustzcash.a
@@ -16,7 +17,7 @@ endif
 
 define $(package)_set_vars
 $(package)_build_opts=--frozen --release
-$(package)_build_opts_mingw32=--target=x86_64-pc-windows-gnu
+$(package)_build_opts_$(host_os)=--target=x86_64-pc-windows-gnu
 endef
 
 define $(package)_preprocess_cmds
