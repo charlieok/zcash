@@ -1,0 +1,35 @@
+
+stages:
+- build
+- test
+
+before_script:
+- apt-get update -y
+- apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python
+  python-zmq zlib1g-dev wget curl bsdmainutils automake mingw-w64 -y
+
+win-latest:
+  stage: build
+  image: ubuntu:18.04
+  script:
+  - ./zcutil/fetch-params.sh
+  - update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
+  - update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+  - HOST=x86_64-w64-mingw32 ./zcutil/build.sh -j$(nproc)
+  artifacts:
+    paths:
+    - ./src/zcashd.exe
+    - ./src/zcash-cli.exe
+
+.win-test-latest:
+  stage: test
+  image: ubuntu:18.04
+  script:
+  - echo THING
+
+.win-deploy-latest:
+  stage: deploy
+  image: ubuntu:18.04
+  script:
+  - echo Deploy
+  when: manual
