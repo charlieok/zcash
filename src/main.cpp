@@ -1853,6 +1853,8 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
 // Requires cs_main.
 void Misbehaving(NodeId pnode, int howmuch)
 {
+    LogPrintf("\nEntering Misbehaving; pnode: %d, howmuch: %d\n", pnode, howmuch);
+
     if (howmuch == 0)
         return;
 
@@ -1860,14 +1862,30 @@ void Misbehaving(NodeId pnode, int howmuch)
     if (state == NULL)
         return;
 
+    //LogPrintf(" state: %s\n", state);
+    LogPrintf("state->fShouldBan: %s\n", state->fShouldBan);
+
+    //LogPrintf(" state->nMisbehavior before increment: %d\n", state->nMisbehavior);
     state->nMisbehavior += howmuch;
+    //LogPrintf(" state->nMisbehavior after increment: %d\n", state->nMisbehavior);
+
     int banscore = GetArg("-banscore", 100);
+
+    //LogPrintf(" banscore: %d\n", banscore);
+    //LogPrintf(" state->nMisbehavior - howmuch: %d\n", state->nMisbehavior - howmuch);
+    //LogPrintf(" state->fShouldBan: %s\n", state->fShouldBan);
+    //LogPrintf("(state->nMisbehavior >= banscore && state->nMisbehavior - howmuch < banscore): %s\n",
+    //          (state->nMisbehavior >= banscore && state->nMisbehavior - howmuch < banscore));
+
     if (state->nMisbehavior >= banscore && state->nMisbehavior - howmuch < banscore)
     {
         LogPrintf("%s: %s (%d -> %d) BAN THRESHOLD EXCEEDED\n", __func__, state->name, state->nMisbehavior-howmuch, state->nMisbehavior);
         state->fShouldBan = true;
     } else
         LogPrintf("%s: %s (%d -> %d)\n", __func__, state->name, state->nMisbehavior-howmuch, state->nMisbehavior);
+
+    LogPrintf("state->fShouldBan: %s\n", state->fShouldBan);
+    LogPrintf("Leaving Misbehaving\n\n");
 }
 
 void static InvalidChainFound(CBlockIndex* pindexNew)
@@ -6002,8 +6020,10 @@ bool ProcessMessages(CNode* pfrom)
 
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
+    std::cout << "\nEntering SendMessages with fSendTrickle = " << std::boolalpha << fSendTrickle << std::endl;
     const Consensus::Params& consensusParams = Params().GetConsensus();
     {
+        //std::cout << "pto->nVersion: " << pto->nVersion << std::endl;
         // Don't send anything until we get its version message
         if (pto->nVersion == 0)
             return true;
@@ -6012,14 +6032,25 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // Message: ping
         //
         bool pingSend = false;
+
+        //std::cout << "pto->fPingQueued: " << std::boolalpha << pto->fPingQueued << std::endl;
         if (pto->fPingQueued) {
             // RPC ping request by user
             pingSend = true;
         }
+
+        //std::cout << "pto->nPingNonceSent: " << pto->nPingNonceSent << std::endl;
+        //std::cout << "pto->nPingUsecStart: " << pto->nPingUsecStart << std::endl;
+        //std::cout << "PING_INTERVAL: " << PING_INTERVAL << std::endl;
+        //std::cout << "GetTimeMicros(): " << GetTimeMicros() << std::endl;
+
         if (pto->nPingNonceSent == 0 && pto->nPingUsecStart + PING_INTERVAL * 1000000 < GetTimeMicros()) {
             // Ping automatically sent as a latency probe & keepalive.
             pingSend = true;
         }
+
+        //std::cout << "pingSend: " << std::boolalpha << pingSend << std::endl;
+
         if (pingSend) {
             uint64_t nonce = 0;
             while (nonce == 0) {
@@ -6038,11 +6069,21 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         }
 
         TRY_LOCK(cs_main, lockMain); // Acquire cs_main for IsInitialBlockDownload() and CNodeState()
+
+        //std::cout << "lockMain: " << std::boolalpha << lockMain << std::endl;
+
         if (!lockMain)
             return true;
 
         // Address refresh broadcast
         static int64_t nLastRebroadcast;
+
+        //std::cout << "IsInitialBlockDownload(): " << std::boolalpha << IsInitialBlockDownload() << std::endl;
+        //std::cout << "GetTime(): " << GetTime() << std::endl;
+        //std::cout << "nLastRebroadcast: " << nLastRebroadcast << std::endl;
+        //std::cout << "(GetTime() - nLastRebroadcast > 24 * 60 * 60): " << std::boolalpha
+        //          << (GetTime() - nLastRebroadcast > 24 * 60 * 60) << std::endl;
+
         if (!IsInitialBlockDownload() && (GetTime() - nLastRebroadcast > 24 * 60 * 60))
         {
             LOCK(cs_vNodes);
@@ -6059,6 +6100,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 nLastRebroadcast = GetTime();
         }
 
+        //std::cout << "fSendTrickle: " << std::boolalpha << fSendTrickle << std::endl;
         //
         // Message: addr
         //
@@ -6085,46 +6127,137 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 pto->PushMessage("addr", vAddr);
         }
 
+        //std::cout << "pto->GetId(): " << pto->GetId() << std::endl;
+
         CNodeState &state = *State(pto->GetId());
+
+        LogPrintf("state.fShouldBan: %s\n", state.fShouldBan);
+
         if (state.fShouldBan) {
+
+            LogPrintf("pto->fWhitelisted: %s\n", pto->fWhitelisted);
+            LogPrintf("pto->addr.ToString(): %s\n", pto->addr.ToString());
+
             if (pto->fWhitelisted)
                 LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr.ToString());
             else {
                 pto->fDisconnect = true;
+
+                LogPrintf("pto->fDisconnect: %s\n", pto->fDisconnect);
+                LogPrintf("pto->addr.IsLocal(): %s\n", pto->addr.IsLocal());
+
                 if (pto->addr.IsLocal())
                     LogPrintf("Warning: not banning local peer %s!\n", pto->addr.ToString());
                 else
                 {
+                    LogPrintf("Calling CNode::Ban(pto->addr)\n");
                     CNode::Ban(pto->addr);
+                    LogPrintf("\nReturned from call to CNode::Ban(pto->addr); back in SendMessages\n");
                 }
             }
             state.fShouldBan = false;
+            LogPrintf("set state.fShouldBan to %s\n", state.fShouldBan);
         }
 
-        BOOST_FOREACH(const CBlockReject& reject, state.rejects)
-            pto->PushMessage("reject", (string)"block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
+        //std::cout << "Iterating through state.rejects" << std::endl;
+
+        BOOST_FOREACH(const CBlockReject &reject, state.rejects) {
+            //std::cout << std::endl;
+            //std::cout << "  reject.chRejectCode: " << reject.chRejectCode << std::endl;
+            //std::cout << "  reject.strRejectReason: " << reject.strRejectReason << std::endl;
+            //std::cout << "  reject.hashBlock: " << reject.hashBlock << std::endl;
+            pto->PushMessage("reject", (string) "block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
+        }
         state.rejects.clear();
 
         // Start block sync
-        if (pindexBestHeader == NULL)
+        if (pindexBestHeader == NULL) {
+            //std::cout << "pindexBestHeader is NULL" << std::endl;
+            //std::cout << "chainActive.Tip(): " << chainActive.Tip() << std::endl;
             pindexBestHeader = chainActive.Tip();
+        }
+
+        //std::cout << std::endl
+        //          << "state.fPreferredDownload: " << std::boolalpha << state.fPreferredDownload << std::endl;
+
+        //std::cout << std::endl
+        //          << "nPreferredDownload: " << nPreferredDownload << std::endl;
+        //std::cout << "pto->fClient: " << std::boolalpha << pto->fClient << std::endl;
+        //std::cout << "pto->fOneShot: " << std::boolalpha << pto->fOneShot << std::endl;
+
+        //std::cout << std::endl
+        //          << "(nPreferredDownload == 0 && !pto->fClient && !pto->fOneShot): "
+        //          << std::boolalpha
+        //          << (nPreferredDownload == 0 && !pto->fClient && !pto->fOneShot) << std::endl;
+
         bool fFetch = state.fPreferredDownload || (nPreferredDownload == 0 && !pto->fClient && !pto->fOneShot); // Download if this is a nice peer, or we have no nice peers and this one might do.
+
+        //std::cout << std::endl << "fFetch: " << std::boolalpha << fFetch << std::endl;
+
+        //std::cout << std::endl
+        //          << "state.fSyncStarted: " << std::boolalpha << state.fSyncStarted << std::endl;
+        //std::cout << "pto->fClient: " << std::boolalpha << pto->fClient << std::endl;
+        //std::cout << "fImporting: " << std::boolalpha << fImporting << std::endl;
+        //std::cout << "fReindex: " << std::boolalpha << fReindex << std::endl;
+
+        //std::cout << std::endl
+        //          << "(!state.fSyncStarted && !pto->fClient && !fImporting && !fReindex): "
+        //          << std::boolalpha
+        //          << (!state.fSyncStarted && !pto->fClient && !fImporting && !fReindex) << std::endl;
+
         if (!state.fSyncStarted && !pto->fClient && !fImporting && !fReindex) {
+
+            //std::cout << "nSyncStarted: " << nSyncStarted << std::endl;
+            //std::cout << "fFetch: " << std::boolalpha << fFetch << std::endl;
+            //std::cout << "pindexBestHeader->GetBlockTime(): " << pindexBestHeader->GetBlockTime() << std::endl;
+            //std::cout << "GetAdjustedTime(): " << GetAdjustedTime() << std::endl;
+            //std::cout << "GetAdjustedTime() - 24 * 60 * 60: " << (GetAdjustedTime() - 24 * 60 * 60) << std::endl;
+
+            //std::cout << std::endl
+            //          << "((nSyncStarted == 0 && fFetch) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60): "
+            //          << std::boolalpha
+            //          << ((nSyncStarted == 0 && fFetch) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) << std::endl;
+
             // Only actively request headers from a single peer, unless we're close to today.
             if ((nSyncStarted == 0 && fFetch) || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 24 * 60 * 60) {
                 state.fSyncStarted = true;
+                //std::cout << "state.fSyncStarted: " << std::boolalpha << state.fSyncStarted << std::endl;
+
                 nSyncStarted++;
+                //std::cout << "nSyncStarted: " << nSyncStarted << std::endl;
+
+                //std::cout << "pindexBestHeader: " << pindexBestHeader << std::endl;
+                //std::cout << "pindexBestHeader->pprev: " << std::boolalpha << pindexBestHeader->pprev << std::endl;
+
                 CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
-                LogPrint("net", "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->id, pto->nStartingHeight);
+
+                //std::cout << "pindexStart: " << pindexStart << std::endl;
+                //std::cout << "pindexStart->nHeight: " << pindexStart->nHeight << std::endl;
+                //std::cout << "pto->id: " << pto->id << std::endl;
+                //std::cout << "pto->nStartingHeight: " << pto->nStartingHeight << std::endl;
+
+                //LogPrint("net", "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->id, pto->nStartingHeight);
+
                 pto->PushMessage("getheaders", chainActive.GetLocator(pindexStart), uint256());
+
+                //std::cout << "Calling chainActive.GetLocator(pindexStart)" << std::endl;
+                //CBlockLocator start_locator = chainActive.GetLocator(pindexStart);
+
+                //std::cout << "Calling pto->PushMessage(\"getheaders\", start_locator, uint256());" << std::endl;
+                //pto->PushMessage("getheaders", start_locator, uint256());
             }
         }
+
+        //std::cout << std::endl << "fReindex: " << fReindex << std::endl;
+        //std::cout << "fImporting: " << fImporting << std::endl;
+        //std::cout << "IsInitialBlockDownload(): " << IsInitialBlockDownload() << std::endl;
 
         // Resend wallet transactions that haven't gotten in a block yet
         // Except during reindex, importing and IBD, when old wallet
         // transactions become unconfirmed and spams other nodes.
         if (!fReindex && !fImporting && !IsInitialBlockDownload())
         {
+            //std::cout << "Calling GetMainSignals().Broadcast(nTimeBestReceived);" << std::endl;
             GetMainSignals().Broadcast(nTimeBestReceived);
         }
 
@@ -6135,6 +6268,9 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         vector<CInv> vInvWait;
         {
             LOCK(pto->cs_inventory);
+
+            //std::cout << std::endl << "pto->vInventoryToSend.size(): " << pto->vInventoryToSend.size() << std::endl;
+
             vInv.reserve(pto->vInventoryToSend.size());
             vInvWait.reserve(pto->vInventoryToSend.size());
             BOOST_FOREACH(const CInv& inv, pto->vInventoryToSend)
@@ -6171,13 +6307,34 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                     }
                 }
             }
+
+            //std::cout << "Finished foreach loop over pto->vInventoryToSend" << std::endl;
+
             pto->vInventoryToSend = vInvWait;
         }
+
+        //std::cout << "vInv.empty(): " << vInv.empty() << std::endl;
+
         if (!vInv.empty())
             pto->PushMessage("inv", vInv);
 
         // Detect whether we're stalling
         int64_t nNow = GetTimeMicros();
+
+        //std::cout << std::endl << "pto->fDisconnect: " << pto->fDisconnect << std::endl;
+        //std::cout << "state.nStallingSince: " << state.nStallingSince << std::endl;
+
+        //std::cout << std::endl << "nNow: " << nNow << std::endl;
+        //std::cout << "BLOCK_STALLING_TIMEOUT: " << BLOCK_STALLING_TIMEOUT << std::endl;
+        //std::cout << "1000000 * BLOCK_STALLING_TIMEOUT: " << (1000000 * BLOCK_STALLING_TIMEOUT) << std::endl;
+        //std::cout << "nNow - 1000000 * BLOCK_STALLING_TIMEOUT: " << (nNow - 1000000 * BLOCK_STALLING_TIMEOUT) << std::endl;
+        //std::cout << "(!pto->fDisconnect && state.nStallingSince && state.nStallingSince < nNow - 1000000 * "
+        //          << "BLOCK_STALLING_TIMEOUT): "
+        //          << (!pto->fDisconnect && state.nStallingSince && state.nStallingSince
+        //                  <
+        //                  nNow - 1000000 * BLOCK_STALLING_TIMEOUT)
+        //          << std::endl;
+
         if (!pto->fDisconnect && state.nStallingSince && state.nStallingSince < nNow - 1000000 * BLOCK_STALLING_TIMEOUT) {
             // Stalling only triggers when the block download window cannot move. During normal steady state,
             // the download window should be much larger than the to-be-downloaded set of blocks, so disconnection
@@ -6185,6 +6342,11 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             LogPrintf("Peer=%d is stalling block download, disconnecting\n", pto->id);
             pto->fDisconnect = true;
         }
+
+        //std::cout << std::endl << "pto->fDisconnect: " << pto->fDisconnect << std::endl;
+        //std::cout << "state.vBlocksInFlight.size(): " << state.vBlocksInFlight.size() << std::endl;
+        //std::cout << "(!pto->fDisconnect && state.vBlocksInFlight.size() > 0): " << (!pto->fDisconnect && state.vBlocksInFlight.size() > 0) << std::endl;
+
         // In case there is a block that has been in flight from this peer for (2 + 0.5 * N) times the block interval
         // (with N the number of validated blocks that were in flight at the time it was requested), disconnect due to
         // timeout. We compensate for in-flight blocks to prevent killing off peers due to our own downstream link
@@ -6208,6 +6370,18 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             }
         }
 
+        //LogPrintf("\nMessage: getdata (blocks)\n");
+        //LogPrintf("pto->fDisconnect: %s\n", pto->fDisconnect);
+        //LogPrintf("pto->fClient: %s\n", pto->fClient);
+        //LogPrintf("fFetch: %s\n", fFetch);
+        //LogPrintf("IsInitialBlockDownload(): %s\n", IsInitialBlockDownload());
+        //LogPrintf("state.nBlocksInFlight: %s\n", state.nBlocksInFlight);
+        //LogPrintf("MAX_BLOCKS_IN_TRANSIT_PER_PEER: %s\n", MAX_BLOCKS_IN_TRANSIT_PER_PEER);
+
+        //LogPrintf("\n(!pto->fDisconnect && !pto->fClient && (fFetch || !IsInitialBlockDownload()) && "
+        //          "state.nBlocksInFlight < MAX_BLOCKS_IN_TRANSIT_PER_PEER): %s\n\n",
+        //          (!pto->fDisconnect && !pto->fClient && (fFetch || !IsInitialBlockDownload()) && state.nBlocksInFlight < MAX_BLOCKS_IN_TRANSIT_PER_PEER));
+
         //
         // Message: getdata (blocks)
         //
@@ -6229,6 +6403,15 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 }
             }
         }
+
+        //LogPrintf("Message: getdata (non-blocks)\n");
+        //LogPrintf("pto->fDisconnect: %s\n", pto->fDisconnect);
+        //LogPrintf("pto->mapAskFor.empty(): %s\n", pto->mapAskFor.empty());
+        //LogPrintf("(*pto->mapAskFor.begin()).first: %s\n", (*pto->mapAskFor.begin()).first);
+        //LogPrintf("nNow: %s\n", nNow);
+
+        //LogPrintf("\n(!pto->fDisconnect && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow): %s\n\n",
+        //          (!pto->fDisconnect && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow));
 
         //
         // Message: getdata (non-blocks)
@@ -6252,10 +6435,14 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             }
             pto->mapAskFor.erase(pto->mapAskFor.begin());
         }
+
+        //LogPrintf("\nvGetData.empty(): %s\n", vGetData.empty());
         if (!vGetData.empty())
             pto->PushMessage("getdata", vGetData);
 
     }
+
+    LogPrintf("\nReturning true from SendMessages\n");
     return true;
 }
 

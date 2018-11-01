@@ -86,19 +86,44 @@ void SplitHostPort(std::string in, int &portOut, std::string &hostOut) {
 
 bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions, bool fAllowLookup)
 {
+    LogPrintf("\nEntering LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions, bool fAllowLookup)\n");
+    LogPrintf(" pszName: %s\n", pszName);
+    LogPrintf(" vIP.size(): %d\n", vIP.size());
+    LogPrintf(" nMaxSolutions: %d\n", nMaxSolutions);
+    LogPrintf(" fAllowLookup: %s\n", fAllowLookup);
+
+    LogPrintf(" Calling vIP.clear()\n");
+
     vIP.clear();
+
+    LogPrintf(" vIP.size(): %d\n", vIP.size());
 
     {
         CNetAddr addr;
+
+        LogPrintf(" Calling addr.SetSpecial(std::string(pszName))\n");
+
         if (addr.SetSpecial(std::string(pszName))) {
+
+            LogPrintf(" addr.ToString(): %s\n", addr.ToString());
+            LogPrintf(" Calling vIP.push_back(addr)\n");
+
             vIP.push_back(addr);
+
+            LogPrintf(" Returned from vIP.push_back(addr)\n");
+            LogPrintf(" vIP.size(): %d\n", vIP.size());
+            LogPrintf("Returning true from LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions, bool fAllowLookup)\n");
+
             return true;
         }
     }
 
 #ifdef HAVE_GETADDRINFO_A
+    LogPrintf(" Inside #ifdef HAVE_GETADDRINFO_A\n");
     struct in_addr ipv4_addr;
 #ifdef HAVE_INET_PTON
+    LogPrintf(" Inside #ifdef HAVE_INET_PTON\n");
+
     if (inet_pton(AF_INET, pszName, &ipv4_addr) > 0) {
         vIP.push_back(CNetAddr(ipv4_addr));
         return true;
@@ -183,13 +208,33 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
 
 bool LookupHost(const char *pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions, bool fAllowLookup)
 {
+    LogPrintf("\nEntering LookupHost(const char *pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions, bool fAllowLookup)\n");
+    LogPrintf(" pszName: %s\n", pszName);
+    LogPrintf(" vIP.size(): %d\n", vIP.size());
+    LogPrintf(" nMaxSolutions: %d\n", nMaxSolutions);
+    LogPrintf(" fAllowLookup: %s\n", fAllowLookup);
+
     std::string strHost(pszName);
+
+    LogPrintf(" strHost: %s\n", strHost);
+    LogPrintf(" strHost.empty(): %s\n", strHost.empty());
+
     if (strHost.empty())
         return false;
+
+    LogPrintf(" boost::algorithm::starts_with(strHost, \"[\"): %s\n", boost::algorithm::starts_with(strHost, "["));
+    LogPrintf(" boost::algorithm::ends_with(strHost, \"]\"): %s\n", boost::algorithm::ends_with(strHost, "]"));
+
     if (boost::algorithm::starts_with(strHost, "[") && boost::algorithm::ends_with(strHost, "]"))
     {
+        LogPrintf(" strHost.size(): %d\n", strHost.size());
+
         strHost = strHost.substr(1, strHost.size() - 2);
+
+        LogPrintf(" strHost set to %s\n", strHost);
     }
+
+    LogPrintf("Calling LookupIntern(strHost.c_str(), vIP, nMaxSolutions, fAllowLookup)\n");
 
     return LookupIntern(strHost.c_str(), vIP, nMaxSolutions, fAllowLookup);
 }
@@ -1241,7 +1286,14 @@ CSubNet::CSubNet():
 
 CSubNet::CSubNet(const std::string &strSubnet, bool fAllowLookup)
 {
+    LogPrintf("\nEntering CSubNet::CSubNet(const std::string &strSubnet, bool fAllowLookup)\n");
+    LogPrintf(" strSubnet: %s\n", strSubnet);
+    LogPrintf(" fAllowLookup: %s\n", fAllowLookup);
+
     size_t slash = strSubnet.find_last_of('/');
+
+    LogPrintf(" slash: %s\n", slash);
+
     std::vector<CNetAddr> vIP;
 
     valid = true;
@@ -1249,41 +1301,79 @@ CSubNet::CSubNet(const std::string &strSubnet, bool fAllowLookup)
     memset(netmask, 255, sizeof(netmask));
 
     std::string strAddress = strSubnet.substr(0, slash);
+
+    LogPrintf(" strAddress: %s\n", strAddress);
+
     if (LookupHost(strAddress.c_str(), vIP, 1, fAllowLookup))
     {
         network = vIP[0];
+
+        //LogPrintf(" network: %s\n", network);
+        LogPrintf(" strSubnet.npos: %s\n", strSubnet.npos);
+
         if (slash != strSubnet.npos)
         {
             std::string strNetmask = strSubnet.substr(slash + 1);
+
+            LogPrintf(" strNetmask: %s\n", strNetmask);
+
             int32_t n;
+
+            LogPrintf(" network.IsIPv4(): %s\n");
+
             // IPv4 addresses start at offset 12, and first 12 bytes must match, so just offset n
             const int astartofs = network.IsIPv4() ? 12 : 0;
+
+            LogPrintf(" astartofs: %s\n", astartofs);
+            LogPrintf(" ParseInt32(strNetmask, &n): %s\n", ParseInt32(strNetmask, &n));
+
             if (ParseInt32(strNetmask, &n)) // If valid number, assume /24 symtex
             {
+                LogPrintf(" n: %d\n", n);
+                LogPrintf(" astartofs*8: %d\n", astartofs*8);
+                LogPrintf(" (128 - astartofs*8): %s\n", (128 - astartofs*8));
+
                 if(n >= 0 && n <= (128 - astartofs*8)) // Only valid if in range of bits of address
                 {
+
+                    LogPrintf(" adding %d to n\n", astartofs*8);
+
                     n += astartofs*8;
+
+                    LogPrintf(" n: %d\n", n);
+                    LogPrintf(" Clear bits [n..127]\n");
+
                     // Clear bits [n..127]
                     for (; n < 128; ++n)
                         netmask[n>>3] &= ~(1<<(7-(n&7)));
+
+                    LogPrintf(" netmask: %d\n", netmask);
                 }
                 else
                 {
                     valid = false;
+                    LogPrintf(" set valid to %s\n", valid);
                 }
             }
             else // If not a valid number, try full netmask syntax
             {
+                LogPrintf(" Testing return value of (LookupHost(strNetmask.c_str(), vIP, 1, false))\n");
+
                 if (LookupHost(strNetmask.c_str(), vIP, 1, false)) // Never allow lookup for netmask
                 {
+                    LogPrintf(" Copying only the last four bytes of vIP[0].ip\n");
+
                     // Copy only the *last* four bytes in case of IPv4, the rest of the mask should stay 1's as
                     // we don't want pchIPv4 to be part of the mask.
                     for(int x=astartofs; x<16; ++x)
                         netmask[x] = vIP[0].ip[x];
+
+                    LogPrintf(" netmask: %d\n", netmask);
                 }
                 else
                 {
                     valid = false;
+                    LogPrintf(" set valid to %s\n", valid);
                 }
             }
         }
@@ -1291,15 +1381,24 @@ CSubNet::CSubNet(const std::string &strSubnet, bool fAllowLookup)
     else
     {
         valid = false;
+        LogPrintf(" set valid to %s\n", valid);
     }
 
     // Normalize network according to netmask
     for(int x=0; x<16; ++x)
         network.ip[x] &= netmask[x];
+
+    LogPrintf("\nLeaving CSubNet::CSubNet(const std::string &strSubnet, bool fAllowLookup)\n");
 }
 
 bool CSubNet::Match(const CNetAddr &addr) const
 {
+    LogPrintf("\nEntering CSubNet::Match(const CNetAddr &addr)\n");
+    LogPrintf(" addr.ToString(): %s\n", addr.ToString());
+    LogPrintf(" valid: %s\n", valid);
+    LogPrintf(" addr.IsValid(): %s\n");
+    LogPrintf(" (!valid || !addr.IsValid()): %s\n", (!valid || !addr.IsValid()));
+
     if (!valid || !addr.IsValid())
         return false;
     for(int x=0; x<16; ++x)

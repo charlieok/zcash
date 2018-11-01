@@ -23,19 +23,41 @@ void CChain::SetTip(CBlockIndex *pindex) {
 }
 
 CBlockLocator CChain::GetLocator(const CBlockIndex *pindex) const {
+    //std::cout << "Entering CChain::GetLocator(const CBlockIndex *pindex)" << std::endl;
+    //std::cout << "pindex: " << pindex << std::endl;
+
     int nStep = 1;
+
+    //std::cout << "nStep: " << nStep << std::endl;
+
     std::vector<uint256> vHave;
     vHave.reserve(32);
 
     if (!pindex)
         pindex = Tip();
     while (pindex) {
+        //std::cout << std::endl << "Top of while loop; pindex: " << pindex << std::endl;
+
+        //std::cout << "  Calling vHave.push_back(pindex->GetBlockHash())" << std::endl;
+
         vHave.push_back(pindex->GetBlockHash());
+
+        //std::cout << "  pindex->nHeight: " << pindex->nHeight << std::endl;
+
         // Stop when we have added the genesis block.
         if (pindex->nHeight == 0)
             break;
+
+        //std::cout << "  nStep: " << nStep << std::endl;
+
+        //std::cout << "  pindex->nHeight - nStep: " << (pindex->nHeight - nStep) << std::endl;
+
         // Exponentially larger steps back, plus the genesis block.
         int nHeight = std::max(pindex->nHeight - nStep, 0);
+
+        //std::cout << "  nHeight: " << nHeight << std::endl;
+        //std::cout << "  Contains(pindex): " << Contains(pindex) << std::endl;
+
         if (Contains(pindex)) {
             // Use O(1) CChain index if possible.
             pindex = (*this)[nHeight];
@@ -43,9 +65,18 @@ CBlockLocator CChain::GetLocator(const CBlockIndex *pindex) const {
             // Otherwise, use O(log n) skiplist.
             pindex = pindex->GetAncestor(nHeight);
         }
+
+        //std::cout << "  pindex: " << pindex << std::endl;
+        //std::cout << "  vHave.size(): " << vHave.size() << std::endl;
+
         if (vHave.size() > 10)
             nStep *= 2;
+
+        //std::cout << "  nStep: " << nStep << std::endl;
     }
+
+    //std::cout << std::endl << "Exited while loop in CChain::GetLocator"<< std::endl;
+    //std::cout << "returning CBlockLocator(vHave)" << std::endl;
 
     return CBlockLocator(vHave);
 }

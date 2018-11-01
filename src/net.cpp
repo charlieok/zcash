@@ -454,30 +454,54 @@ void CNode::ClearBanned()
 
 bool CNode::IsBanned(CNetAddr ip)
 {
+    LogPrintf("\nEntering CNode::IsBanned(CNetAddr ip)\n");
+    LogPrintf(" ip.ToString(): %s\n", ip.ToString());
+
     bool fResult = false;
     {
         LOCK(cs_setBanned);
         for (std::map<CSubNet, int64_t>::iterator it = setBanned.begin(); it != setBanned.end(); it++)
         {
+            LogPrintf("\n Iterating over setBanned map\n");
+
             CSubNet subNet = (*it).first;
+
+            LogPrintf("  subNet.ToString: %s\n", subNet.ToString());
+
             int64_t t = (*it).second;
+            LogPrintf("  t: %d\n", t);
+
+            LogPrintf("  subNet.Match(ip): %s\n", subNet.Match(ip));
+            LogPrintf("  GetTime(): %s\n", GetTime());
+            LogPrintf(" GetTime() < t: %s\n", (GetTime() < t));
+            LogPrintf("  (subNet.Match(ip) && GetTime() < t): %s\n", (subNet.Match(ip) && GetTime() < t));
 
             if(subNet.Match(ip) && GetTime() < t)
                 fResult = true;
         }
     }
+
+    LogPrintf("\nReturning from CNode::IsBanned with fResult = %s\n", fResult);
+
     return fResult;
 }
 
 bool CNode::IsBanned(CSubNet subnet)
 {
+    LogPrintf("Entering CNode::IsBanned(CSubNet subnet)");
+
     bool fResult = false;
     {
         LOCK(cs_setBanned);
         std::map<CSubNet, int64_t>::iterator i = setBanned.find(subnet);
+
         if (i != setBanned.end())
         {
             int64_t t = (*i).second;
+            LogPrintf(" t: %d\n", t);
+            LogPrintf(" GetTime(): %s\n", GetTime());
+            LogPrintf(" (GetTime() < t): %s\n", (GetTime() < t));
+
             if (GetTime() < t)
                 fResult = true;
         }
@@ -486,18 +510,45 @@ bool CNode::IsBanned(CSubNet subnet)
 }
 
 void CNode::Ban(const CNetAddr& addr, int64_t bantimeoffset, bool sinceUnixEpoch) {
+    LogPrintf("\nEntering CNode::Ban(const CNetAddr& addr, int64_t bantimeoffset, bool sinceUnixEpoch)\n");
+    LogPrintf(" addr.ToString(): %s\n", addr.ToString());
+    LogPrintf(" bantimeoffset: %d\n", bantimeoffset);
+    LogPrintf(" sinceUnixEpoch: %s\n", sinceUnixEpoch);
+    LogPrintf(" addr.IsIPv4(): %s\n", addr.IsIPv4());
+
     CSubNet subNet(addr.ToString()+(addr.IsIPv4() ? "/32" : "/128"));
+
+    LogPrintf(" subNet.ToString: %s\n", subNet.ToString());
+
+    LogPrintf("Calling Ban(subNet, bantimeoffset, sinceUnixEpoch)\n");
+
     Ban(subNet, bantimeoffset, sinceUnixEpoch);
 }
 
 void CNode::Ban(const CSubNet& subNet, int64_t bantimeoffset, bool sinceUnixEpoch) {
+    LogPrintf("\nEntering CNode::Ban(const CSubNet& subNet, int64_t bantimeoffset, bool sinceUnixEpoch)\n");
+    LogPrintf(" subNet.ToString: %s\n", subNet.ToString());
+    LogPrintf(" bantimeoffset: %d\n", bantimeoffset);
+    LogPrintf(" sinceUnixEpoch: %d\n");
+
+    LogPrintf(" GetTime(): %d\n", GetTime());
+    LogPrintf(" GetArg(\"-bantime\", 60*60*24): %d\n", GetArg("-bantime", 60*60*24));
+
     int64_t banTime = GetTime()+GetArg("-bantime", 60*60*24);  // Default 24-hour ban
+
     if (bantimeoffset > 0)
         banTime = (sinceUnixEpoch ? 0 : GetTime() )+bantimeoffset;
 
+    LogPrintf(" banTime: %d\n", banTime);
+
     LOCK(cs_setBanned);
+
+    LogPrintf(" setBanned[subNet] (before): %d\n", banTime);
+
     if (setBanned[subNet] < banTime)
         setBanned[subNet] = banTime;
+
+    LogPrintf(" setBanned[subNet] (after): %d\n\n", banTime);
 }
 
 bool CNode::Unban(const CNetAddr &addr) {

@@ -229,8 +229,12 @@ void OpenDebugLog()
 
 bool LogAcceptCategory(const char* category)
 {
+    //cout << std::endl << "Entering LogAcceptCategory" << std::endl;
     if (category != NULL)
     {
+        //cout << " category: " << category << std::endl;
+        //cout << " fDebug: " << std::boolalpha << fDebug << std::endl;
+
         if (!fDebug)
             return false;
 
@@ -242,17 +246,25 @@ bool LogAcceptCategory(const char* category)
         if (ptrCategory.get() == NULL)
         {
             const vector<string>& categories = mapMultiArgs["-debug"];
+
             ptrCategory.reset(new set<string>(categories.begin(), categories.end()));
             // thread_specific_ptr automatically deletes the set when the thread ends.
         }
         const set<string>& setCategories = *ptrCategory.get();
 
+        //cout << "setCategories.count(string(\"\"))" << setCategories.count(string("")) << std::endl;
+        //cout << "setCategories.count(string(\"1\"))" << setCategories.count(string("1")) << std::endl;
+        //cout << "setCategories.count(string(category))" << setCategories.count(string(category)) << std::endl;
+
         // if not debugging everything and not debugging specific category, LogPrint does nothing.
-        if (setCategories.count(string("")) == 0 &&
-            setCategories.count(string("1")) == 0 &&
-            setCategories.count(string(category)) == 0)
-            return false;
+        //if (setCategories.count(string("")) == 0 &&
+        //    setCategories.count(string("1")) == 0 &&
+        //    setCategories.count(string(category)) == 0)
+        //    return false;
     }
+    // else {
+    //    cout << " category is NULL" << std::endl;
+    //}
     return true;
 }
 
@@ -283,8 +295,15 @@ static std::string LogTimestampStr(const std::string &str, bool *fStartedNewLine
 
 int LogPrintStr(const std::string &str)
 {
+    //cout << std::endl << "Entering LogPrintStr" << std::endl;
+    //cout << " str: " << str << std::endl;
+
     int ret = 0; // Returns total number of characters written
     static bool fStartedNewLine = true;
+
+    //cout << " fPrintToConsole: " << std::boolalpha << fPrintToConsole << std::endl;
+    //cout << " fPrintToDebugLog: " << std::boolalpha << fPrintToDebugLog << std::endl;
+
     if (fPrintToConsole)
     {
         // print to console

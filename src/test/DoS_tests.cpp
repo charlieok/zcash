@@ -49,12 +49,22 @@ BOOST_FIXTURE_TEST_SUITE(DoS_tests, TestingSetup)
 
 BOOST_AUTO_TEST_CASE(DoS_banning)
 {
+    std::cout <<"Calling CNode::ClearBanned()" << std::endl;
     CNode::ClearBanned();
+
     CAddress addr1(ip(0xa0b0c001));
+
     CNode dummyNode1(INVALID_SOCKET, addr1, "", true);
     dummyNode1.nVersion = 1;
+
+    std::cout << "dummyNode1.GetId(): " << dummyNode1.GetId() << std::endl;
+
     Misbehaving(dummyNode1.GetId(), 100); // Should get banned
+
+    std::cout << "Calling SendMessages(&dummyNode1, false)" << std::endl;
     SendMessages(&dummyNode1, false);
+    std::cout << "Back from SendMessages(&dummyNode1, false)" << std::endl;
+
     BOOST_CHECK(CNode::IsBanned(addr1));
     BOOST_CHECK(!CNode::IsBanned(ip(0xa0b0c001|0x0000ff00))); // Different IP, not banned
 
