@@ -17,10 +17,10 @@ ubuntu-windows-cross-compile:
   - HOST=x86_64-w64-mingw32 ./zcutil/build.sh -j$(nproc)
   artifacts:
     paths:
-    - ./src/zcashd.exe
-    - ./src/zcash-cli.exe
-    - ./src/zcash-gtest.exe
-    - ./src/zcash-tx.exe
+#    - ./src/zcashd.exe
+#    - ./src/zcash-cli.exe
+#    - ./src/zcash-gtest.exe
+#    - ./src/zcash-tx.exe
     - ./src/test/test_bitcoin.exe
 
 windows-DoS_banning:
@@ -45,7 +45,7 @@ windows-DoS_banning:
       junit:
       - ./DoS_banning_report.xml
 
-windows-DoS_banscore:
+.windows-DoS_banscore:
   stage: test
   tags:
   - windows
@@ -66,7 +66,7 @@ windows-DoS_banscore:
       junit:
       - ./DoS_banscore_report.xml
 
-windows-DoS_bantime:
+.windows-DoS_bantime:
   stage: test
   tags:
   - windows
@@ -87,7 +87,7 @@ windows-DoS_bantime:
       junit:
       - ./DoS_bantime_report.xml
 
-windows-netbase_networks:
+.windows-netbase_networks:
   stage: test
   tags:
   - windows
@@ -108,7 +108,7 @@ windows-netbase_networks:
       junit:
       - ./netbase_networks_report.xml
 
-windows-netbase_properties:
+.windows-netbase_properties:
   stage: test
   tags:
   - windows
@@ -129,7 +129,7 @@ windows-netbase_properties:
       junit:
       - ./netbase_properties_report.xml
 
-windows-netbase_lookupnumeric:
+.windows-netbase_lookupnumeric:
   stage: test
   tags:
   - windows
@@ -150,7 +150,7 @@ windows-netbase_lookupnumeric:
       junit:
       - ./netbase_lookupnumeric_report.xml
 
-windows-onioncat_test:
+.windows-onioncat_test:
   stage: test
   tags:
   - windows
@@ -171,7 +171,7 @@ windows-onioncat_test:
       junit:
       - ./onioncat_test_report.xml
 
-windows-subnet_test:
+.windows-subnet_test:
   stage: test
   tags:
   - windows
@@ -192,7 +192,7 @@ windows-subnet_test:
       junit:
       - ./subnet_test_report.xml
 
-windows-netbase_getgroup:
+.windows-netbase_getgroup:
   stage: test
   tags:
   - windows
@@ -213,7 +213,7 @@ windows-netbase_getgroup:
       junit:
       - ./netbase_getgroup_report.xml
 
-windows-rpc_ban:
+.windows-rpc_ban:
   stage: test
   tags:
   - windows
@@ -234,7 +234,7 @@ windows-rpc_ban:
       junit:
       - ./rpc_ban_report.xml
 
-windows-addrman_tried_collisions:
+.windows-addrman_tried_collisions:
   stage: test
   tags:
   - windows
@@ -255,7 +255,7 @@ windows-addrman_tried_collisions:
       junit:
       - ./addrman_tried_collisions_report.xml
 
-windows-addrman_create:
+.windows-addrman_create:
   stage: test
   tags:
   - windows
@@ -276,7 +276,7 @@ windows-addrman_create:
       junit:
       - ./addrman_create_report.xml
 
-windows-caddrinfo_get_tried_bucket:
+.windows-caddrinfo_get_tried_bucket:
   stage: test
   tags:
   - windows
@@ -297,7 +297,7 @@ windows-caddrinfo_get_tried_bucket:
       junit:
       - ./caddrinfo_get_tried_bucket_report.xml
 
-windows-addrman_getaddr:
+.windows-addrman_getaddr:
   stage: test
   tags:
   - windows
@@ -318,7 +318,7 @@ windows-addrman_getaddr:
       junit:
       - ./addrman_getaddr_report.xml
 
-windows-addrman_find:
+.windows-addrman_find:
   stage: test
   tags:
   - windows
@@ -339,7 +339,7 @@ windows-addrman_find:
       junit:
       - ./addrman_find_report.xml
 
-windows-addrman_simple:
+.windows-addrman_simple:
   stage: test
   tags:
   - windows
@@ -360,7 +360,7 @@ windows-addrman_simple:
       junit:
       - ./addrman_simple_report.xml
 
-windows-addrman_new_collisions:
+.windows-addrman_new_collisions:
   stage: test
   tags:
   - windows
@@ -381,7 +381,7 @@ windows-addrman_new_collisions:
       junit:
       - ./addrman_new_collisions_report.xml
 
-windows-caddrinfo_get_new_bucket:
+.windows-caddrinfo_get_new_bucket:
   stage: test
   tags:
   - windows
@@ -402,7 +402,7 @@ windows-caddrinfo_get_new_bucket:
       junit:
       - ./caddrinfo_get_new_bucket_report.xml
 
-windows-addrman_ports:
+.windows-addrman_ports:
   stage: test
   tags:
   - windows
@@ -423,7 +423,7 @@ windows-addrman_ports:
       junit:
       - ./addrman_ports_report.xml
 
-windows-addrman_select:
+.windows-addrman_select:
   stage: test
   tags:
   - windows
@@ -444,7 +444,7 @@ windows-addrman_select:
       junit:
       - ./addrman_select_report.xml
 
-windows-miner-CreateNewBlock_validity:
+.windows-miner-CreateNewBlock_validity:
   stage: test
   tags:
   - windows
@@ -465,7 +465,7 @@ windows-miner-CreateNewBlock_validity:
       junit:
       - ./miner_CreateNewBlock_validity_report.xml
 
-windows-gtest-RejectsInvalidTransparentOutput:
+.windows-gtest-RejectsInvalidTransparentOutput:
   stage: test
   tags:
   - windows
@@ -478,7 +478,7 @@ windows-gtest-RejectsInvalidTransparentOutput:
     reports:
       junit: ./gtest_RejectsInvalidTransparentOutput_output.xml
 
-windows-test_bitcoin-netbase_tests:
+.windows-test_bitcoin-netbase_tests:
   stage: test
   tags:
   - windows
@@ -500,7 +500,7 @@ windows-test_bitcoin-netbase_tests:
       junit:
       - ./netbase_tests_report.xml
 
-windows-test_bitcoin-addrman_tests:
+.windows-test_bitcoin-addrman_tests:
   stage: test
   tags:
   - windows
@@ -522,7 +522,7 @@ windows-test_bitcoin-addrman_tests:
       junit:
       - ./addrman_tests_report.xml
 
-windows-test_bitcoin-DoS_tests:
+.windows-test_bitcoin-DoS_tests:
   stage: test
   tags:
   - windows
@@ -544,7 +544,7 @@ windows-test_bitcoin-DoS_tests:
       junit:
       - ./DoS_tests_report.xml
 
-windows-test_bitcoin-rpc_tests:
+.windows-test_bitcoin-rpc_tests:
   stage: test
   tags:
   - windows
@@ -566,7 +566,7 @@ windows-test_bitcoin-rpc_tests:
       junit:
       - ./rpc_tests_report.xml
 
-windows-test_bitcoin:
+.windows-test_bitcoin:
   stage: test
   tags:
   - windows
@@ -588,7 +588,7 @@ windows-test_bitcoin:
       junit:
       - ./test_bitcoin_report.xml
 
-windows-test_bitcoin-sighash_tests:
+.windows-test_bitcoin-sighash_tests:
   stage: test
   tags:
   - windows
@@ -610,7 +610,7 @@ windows-test_bitcoin-sighash_tests:
       junit:
       - ./sighash_tests_report.xml
 
-windows-test_bitcoin-transaction_tests:
+.windows-test_bitcoin-transaction_tests:
   stage: test
   tags:
   - windows
@@ -632,7 +632,7 @@ windows-test_bitcoin-transaction_tests:
       junit:
       - ./transaction_tests_report.xml
 
-windows-gtest:
+.windows-gtest:
   stage: test
   tags:
   - windows
