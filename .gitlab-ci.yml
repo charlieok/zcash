@@ -632,6 +632,9 @@ windows-DoS_banning:
       junit:
       - ./transaction_tests_report.xml
 
+#######################
+#total num gtests
+#num gtests suits
 .windows-gtest:
   stage: test
   tags:
@@ -640,9 +643,440 @@ windows-DoS_banning:
   script:
   - ./src/zcash-gtest.exe --help
   - ./src/zcash-gtest.exe --gtest_list_tests
+  - ./src/zcash-gtest.exe --gtest_list_tests  | grep "   *" | wc -l
+  - ./zcash-gtest --gtest_list_tests | grep -v "^ " | wc -l 
   - ./src/zcash-gtest.exe --gtest_output=xml:gtest_output.xml
                           --gtest_shuffle
-                          --gtest_filter=*:-TransactionBuilder.RejectsInvalidTransparentOutput
+      
   artifacts:
     reports:
       junit: ./gtest_output.xml
+
+.windows-gtest-checktransaction_tests:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:checktransaction_tests.xml
+                          --gtest_shuffle
+                          --gtest_filter=checktransaction_tests.\*
+  artifacts:
+    reports:
+      junit: ./checktransaction_tests.xml
+
+.windows-gtest-founders_reward_test:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:founders_reward_test.xml
+                          --gtest_shuffle
+                          --gtest_filter=founders_reward_test.\*
+  artifacts:
+    reports:
+      junit: ./founders_reward_test.xml
+
+.windows-gtest-wallet_zkeys_tests:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:wallet_zkeys_tests.xml
+                          --gtest_shuffle
+                          --gtest_filter=wallet_zkeys_tests.\*
+  artifacts:
+    reports:
+      junit: ./wallet_zkeys_tests.xml
+
+.windows-gtest-tautologies:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:tautologies.xml
+                          --gtest_shuffle
+                          --gtest_filter=tautologies.\*
+  artifacts:
+    reports:
+      junit: ./tautologies.xml
+
+.windows-gtest-DeprecationTest:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:DeprecationTest.xml
+                          --gtest_shuffle
+                          --gtest_filter=DeprecationTest.\*
+  artifacts:
+    reports:
+      junit: ./DeprecationTest.xml
+
+.windows-gtest-equihash_tests:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:equihash_tests.xml
+                          --gtest_shuffle
+                          --gtest_filter=equihash_tests.\*
+  artifacts:
+    reports:
+      junit: ./equihash_tests.xml
+
+.windows-gtest-HTTPRPC:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:HTTPRPC.xml
+                          --gtest_shuffle
+                          --gtest_filter=HTTPRPC.\*
+  artifacts:
+    reports:
+      junit: ./HTTPRPC.xml
+
+.windows-gtest-joinsplit:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:joinsplit.xml
+                          --gtest_shuffle
+                          --gtest_filter=joinsplit.\*
+  artifacts:
+    reports:
+      junit: ./joinsplit.xml
+
+.windows-gtest-Keys:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:Keys.xml
+                          --gtest_shuffle
+                          --gtest_filter=Keys.\*
+  artifacts:
+    reports:
+      junit: ./Keys.xml
+
+.windows-gtest-keystore_tests:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:keystore_tests.xml
+                          --gtest_shuffle
+                          --gtest_filter=keystore_tests.\*
+  artifacts:
+    reports:
+      junit: ./keystore_tests.xml
+
+.windows-gtest-noteencryption:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:noteencryption.xml
+                          --gtest_shuffle
+                          --gtest_filter=noteencryption.\*
+  artifacts:
+    reports:
+      junit: ./noteencryption.xml
+
+.windows-gtest-Mempool:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:Mempool.xml
+                          --gtest_shuffle
+                          --gtest_filter=Mempool.\*
+  artifacts:
+    reports:
+      junit: ./Mempool.xml
+
+.windows-gtest-merkletree:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:merkletree.xml
+                          --gtest_shuffle
+                          --gtest_filter=merkletree.\*
+  artifacts:
+    reports:
+      junit: ./merkletree.xml
+
+.windows-gtest-Metrics:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:Metrics.xml
+                          --gtest_shuffle
+                          --gtest_filter=Metrics.\*
+  artifacts:
+    reports:
+      junit: ./Metrics.xml
+
+.windows-gtest-Miner:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:Miner.xml
+                          --gtest_shuffle
+                          --gtest_filter=Miner.\*
+  artifacts:
+    reports:
+      junit: ./Miner.xml
+
+.windows-gtest-PoW:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:PoW.xml
+                          --gtest_shuffle
+                          --gtest_filter=PoW.\*
+  artifacts:
+    reports:
+      junit: ./PoW.xml
+
+.windows-gtest-Random:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:Random.xml
+                          --gtest_shuffle
+                          --gtest_filter=Random.\*
+  artifacts:
+    reports:
+      junit: ./Random.xml
+
+.windows-gtest-rpc:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:rpc.xml
+                          --gtest_shuffle
+                          --gtest_filter=rpc.\*
+  artifacts:
+    reports:
+      junit: ./rpc.xml
+
+.windows-gtest-SaplingNote:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:SaplingNote.xml
+                          --gtest_shuffle
+                          --gtest_filter=SaplingNote.\*
+  artifacts:
+    reports:
+      junit: ./SaplingNote.xml
+
+.windows-gtest-Transaction:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:Transaction.xml
+                          --gtest_shuffle
+                          --gtest_filter=Transaction.\*
+  artifacts:
+    reports:
+      junit: ./Transaction.xml
+      
+.windows-gtest-TransactionBuilder:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:TransactionBuilder.xml
+                          --gtest_shuffle
+                          --gtest_filter=TransactionBuilder.\*
+  artifacts:
+    reports:
+      junit: ./TransactionBuilder.xml
+
+.windows-gtest-UpgradesTest:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:UpgradesTest.xml
+                          --gtest_shuffle
+                          --gtest_filter=UpgradesTest.\*
+  artifacts:
+    reports:
+      junit: ./UpgradesTest.xml
+
+.windows-gtest-Validation:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:Validation.xml
+                          --gtest_shuffle
+                          --gtest_filter=Validation.\*
+  artifacts:
+    reports:
+      junit: ./Validation.xml
+
+.windows-gtest-circuit:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:circuit.xml
+                          --gtest_shuffle
+                          --gtest_filter=circuit.\*
+  artifacts:
+    reports:
+      junit: ./circuit.xml
+
+.windows-gtest-txid_tests:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:txid_tests.xml
+                          --gtest_shuffle
+                          --gtest_filter=txid_tests.\*
+  artifacts:
+    reports:
+      junit: ./txid_tests.xml
+
+.windows-gtest-libzcash_utils:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:libzcash_utils.xml
+                          --gtest_shuffle
+                          --gtest_filter=libzcash_utils.\*
+  artifacts:
+    reports:
+      junit: ./libzcash_utils.xml
+
+.windows-gtest-proofs:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:proofs.xml
+                          --gtest_shuffle
+                          --gtest_filter=proofs.\*
+  artifacts:
+    reports:
+      junit: ./proofs.xml
+
+.windows-gtest-paymentdisclosure:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:paymentdisclosure.xml
+                          --gtest_shuffle
+                          --gtest_filter=paymentdisclosure.\*
+  artifacts:
+    reports:
+      junit: ./paymentdisclosure.xml
+
+.windows-gtest-PedersenHash:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:PedersenHash.xml
+                          --gtest_shuffle
+                          --gtest_filter=PedersenHash.\*
+  artifacts:
+    reports:
+      junit: ./PedersenHash.xml
+
+.windows-gtest-CheckBlock:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:CheckBlock.xml
+                          --gtest_shuffle
+                          --gtest_filter=CheckBlock.\*
+  artifacts:
+    reports:
+      junit: ./CheckBlock.xml
+
+.windows-gtest-ContextualCheckBlockTest:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:ContextualCheckBlockTest.xml
+                          --gtest_shuffle
+                          --gtest_filter=ContextualCheckBlockTest.\*
+  artifacts:
+    reports:
+      junit: ./ContextualCheckBlockTest.xml
+
+.windows-gtest-ZIP32:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:ZIP32.xml
+                          --gtest_shuffle
+                          --gtest_filter=ZIP32.\*
+  artifacts:
+    reports:
+      junit: ./ZIP32.xml
+
+.windows-gtest-WalletTests:
+  stage: test
+  tags:
+  - windows
+  - powershell
+  script:
+  - ./src/zcash-gtest.exe --gtest_output=xml:WalletTests.xml
+                          --gtest_shuffle
+                          --gtest_filter=WalletTests.\*
+  artifacts:
+    reports:
+      junit: ./WalletTests.xml
