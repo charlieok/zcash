@@ -155,6 +155,7 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
 #ifdef WIN32
     LogPrintf(" Inside #ifdef WIN32\n");
     LogPrintf(" fAllowLookup: %s\n", fAllowLookup);
+    LogPrintf(" AI_NUMERICHOST: %d\n", AI_NUMERICHOST);
 
     aiHint.ai_flags = fAllowLookup ? 0 : AI_NUMERICHOST;
 #else
@@ -167,6 +168,8 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
 
     struct addrinfo *aiRes = NULL;
 #ifdef HAVE_GETADDRINFO_A
+    LogPrintf(" Inside #ifdef HAVE_GETADDRINFO_A\n");
+
     struct gaicb gcb, *query = &gcb;
     memset(query, 0, sizeof(struct gaicb));
     gcb.ar_name = pszName;
@@ -189,8 +192,12 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
             aiRes = query->ar_result;
     } while (nErr == EAI_INPROGRESS);
 #else
+    LogPrintf(" Inside #else (for HAVE_GETADDRINFO_A)\n");
     int nErr = getaddrinfo(pszName, NULL, &aiHint, &aiRes);
 #endif
+
+    LogPrintf(" nErr: %s\n", nErr);
+
     if (nErr)
         return false;
 
