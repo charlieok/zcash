@@ -135,6 +135,8 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
         return true;
     }
 #else
+    LogPrintf(" Inside #else (for HAVE_INET_PTON)\n");
+
     ipv4_addr.s_addr = inet_addr(pszName);
     if (ipv4_addr.s_addr != INADDR_NONE) {
         vIP.push_back(CNetAddr(ipv4_addr));
@@ -143,16 +145,25 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
 #endif
 #endif
 
+    LogPrintf(" initializing aiHint\n");
+
     struct addrinfo aiHint;
     memset(&aiHint, 0, sizeof(struct addrinfo));
     aiHint.ai_socktype = SOCK_STREAM;
     aiHint.ai_protocol = IPPROTO_TCP;
     aiHint.ai_family = AF_UNSPEC;
 #ifdef WIN32
+    LogPrintf(" Inside #ifdef WIN32\n");
+    LogPrintf(" fAllowLookup: %s\n", fAllowLookup);
+
     aiHint.ai_flags = fAllowLookup ? 0 : AI_NUMERICHOST;
 #else
+    LogPrintf(" Inside #else (for WIN32)\n");
+
     aiHint.ai_flags = fAllowLookup ? AI_ADDRCONFIG : AI_NUMERICHOST;
 #endif
+
+    LogPrintf(" aiHint.ai_flags: %s\n", aiHint.ai_flags);
 
     struct addrinfo *aiRes = NULL;
 #ifdef HAVE_GETADDRINFO_A
@@ -202,6 +213,10 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
     }
 
     freeaddrinfo(aiRes);
+
+    LogPrintf(" vIP.size(): %d\n", vIP.size());
+    LogPrintf("\nReturning %s from LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsigned int nMaxSolutions, bool fAllowLookup)\n",
+              vIP.size() > 0);
 
     return (vIP.size() > 0);
 }
