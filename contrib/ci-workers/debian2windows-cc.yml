@@ -1,0 +1,23 @@
+---
+# Configure a Buildbot worker
+- import_playbook: unix.yml
+
+- name: Install windows-cross-compile-specific worker dependencies
+  hosts: debian2windows-cc
+  become: true
+
+  vars_files:
+    - vars/default.yml
+
+  tasks:
+    - name: Install required packages for windows cross-compile
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ windows_cross_compile_deps }}"
+
+    - name: Set gcc posix compiler variant
+      command: "update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix"
+
+    - name: Set g++ posix compiler variant
+      command: "update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix"

@@ -25,6 +25,10 @@ build_deps:
   - gcc
   - make
 
+# Dependencies required to cross-compile Zcash for windows
+windows_cross_compile_deps:
+  - mingw-w64
+
 # Dependencies required to link Zcash
 link_deps:
   - libtool
@@ -36,6 +40,10 @@ dist_deps: []
 grind_deps:
   - lcov
   - valgrind
+
+# Additional windows-cross-compile-specific dependencies
+windows_cross_compile_deps:
+  - mingw-w64
 
 # Python modules required on the system
 system_modules:
