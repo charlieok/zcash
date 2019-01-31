@@ -1,6 +1,6 @@
 ---
 - name: Configure a Buildbot worker for Zcash CI
-  hosts: zcash-ci-worker-unix
+  hosts: "{{ variable_host | default('zcash-ci-worker-unix') }}"
   become: true
   gather_facts: False
 

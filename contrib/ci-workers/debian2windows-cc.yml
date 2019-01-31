@@ -6,6 +6,9 @@
   hosts: debian2windows-cc
   become: true
 
+  vars:
+    variable_host: debian2windows-cc
+
   vars_files:
     - vars/default.yml
 
