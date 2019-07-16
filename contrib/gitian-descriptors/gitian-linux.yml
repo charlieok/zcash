@@ -136,6 +136,9 @@ script: |
 
     export BINARIES_PATH=${INSTALLPATH}/bin
     ./zcutil/build-debian-package.sh
+    pwd
+    ls -Alth
+    echo OUTDIR=${OUTDIR}
     cp ./zcash-*.deb ${OUTDIR}/
   done
   mkdir -p $OUTDIR/src
