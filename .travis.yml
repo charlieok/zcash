@@ -1,0 +1,15 @@
+os: osx
+addons:
+  homebrew:
+    packages:
+      - git
+      - pkgconfig
+      - automake
+      - autoconf
+      - libtool
+      - coreutils
+install:
+  - sudo easy_install pip
+  - sudo pip install pyblake2 pyzmq
+script:
+  - ./zcutil/build.sh
