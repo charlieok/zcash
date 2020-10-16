@@ -13,4 +13,5 @@ install:
   - sudo python3 get-pip.py
   - sudo pip3 install pyblake2 pyzmq
 script:
+  - make -C ./depends
   - ./zcutil/build.sh
