@@ -9,7 +9,8 @@ addons:
       - libtool
       - coreutils
 install:
-  - sudo easy_install pip
-  - sudo pip install pyblake2 pyzmq
+  - curl -O https://bootstrap.pypa.io/get-pip.py
+  - sudo python3 get-pip.py
+  - sudo pip3 install pyblake2 pyzmq
 script:
   - ./zcutil/build.sh
