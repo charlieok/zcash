@@ -15,3 +15,4 @@ install:
 script:
   - make -C ./depends
   - ./zcutil/build.sh -j2
+  - ./qa/zcash/full_test_suite.py btest
