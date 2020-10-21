@@ -15,7 +15,7 @@ install:
   - sudo pip3 install pyblake2 pyzmq
 cache:
   directories:
-    - "/Users/travis/Library/Application\ Support/ZcashParams"
+    - "{$HOME}/Library/Application\ Support/ZcashParams"
 script:
   - make -C ./depends
   - ./zcutil/build.sh -j2
