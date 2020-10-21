@@ -10,6 +10,7 @@ addons:
       - coreutils
       - ipfs
 install:
+  - brew list
   - ipfs init
   - ipfs daemon &
   - ipfs get QmUSFo5zgPPXXejidzFWZcxVyF3AJH6Pr9br6Xisdww1r1 --output "{$HOME}/Library/Application\ Support/ZcashParams"
