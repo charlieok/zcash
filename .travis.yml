@@ -3,13 +3,18 @@ addons:
   homebrew:
     packages:
       - git
-      - pkgconfig
+      - pkg-config
       - automake
       - autoconf
       - libtool
       - coreutils
       - ipfs
 install:
+  - brew list
+  - brew install ipfs
+  - brew list
+  - brew update
+  - brew install ipfs
   - brew list
   - ipfs init
   - ipfs daemon &
