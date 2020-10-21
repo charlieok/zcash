@@ -8,6 +8,7 @@ addons:
       - autoconf
       - libtool
       - coreutils
+      - ipfs
 install:
   - curl -O https://bootstrap.pypa.io/get-pip.py
   - sudo python3 get-pip.py
