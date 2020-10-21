@@ -13,9 +13,6 @@ install:
   - brew list
   - brew install ipfs
   - brew list
-  - brew update
-  - brew install ipfs
-  - brew list
   - ipfs init
   - ipfs daemon &
   - ipfs get QmUSFo5zgPPXXejidzFWZcxVyF3AJH6Pr9br6Xisdww1r1 --output "{$HOME}/Library/Application\ Support/ZcashParams"
