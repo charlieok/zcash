@@ -36,7 +36,10 @@ jobs:
         - pip3 list | grep simplejson
       env:
         - TEST_TARGET=rpc
-    - script: ./qa/zcash/full_test_suite.py $TEST_TARGET
+      script:
+        - pwd
+        - ls -Alth
+        - ./qa/zcash/full_test_suite.py $TEST_TARGET
       name: "btest"
       env:
         - TEST_TARGET=btest
