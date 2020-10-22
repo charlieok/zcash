@@ -27,4 +27,16 @@ cache:
 script:
   - make -C ./depends
   - ./zcutil/build.sh -j2
-  - ./qa/zcash/full_test_suite.py btest
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - python3 --version
+        - pip3 list | grep simplejson
+      env:
+        - TEST_TARGET=rpc
+    - script: ./qa/zcash/full_test_suite.py $TEST_TARGET
+      name: "btest"
+      env:
+        - TEST_TARGET=btest
