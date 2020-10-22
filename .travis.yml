@@ -16,7 +16,7 @@ install:
   - ipfs init
   - ipfs daemon &
   - sleep 5
-  - ipfs get QmUSFo5zgPPXXejidzFWZcxVyF3AJH6Pr9br6Xisdww1r1 --output "{$HOME}/Library/Application\ Support/ZcashParams"
+  - travis_wait 60 ipfs get QmUSFo5zgPPXXejidzFWZcxVyF3AJH6Pr9br6Xisdww1r1 --output "{$HOME}/Library/Application\ Support/ZcashParams"
   - curl -O https://bootstrap.pypa.io/get-pip.py
   - sudo python3 get-pip.py
   - sudo pip3 install pyblake2 pyzmq
