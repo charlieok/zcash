@@ -41,7 +41,8 @@ jobs:
         - ./qa/zcash/full_test_suite.py $TEST_TARGET
       env:
         - TEST_TARGET=rpc
-    - script:
+    - name: "btest"
+      script:
         - ./qa/zcash/full_test_suite.py $TEST_TARGET
       name: "btest"
       env:
