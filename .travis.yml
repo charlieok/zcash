@@ -15,6 +15,7 @@ install:
   - brew list
   - ipfs init
   - ipfs daemon &
+  - sleep 10
   - ipfs get QmUSFo5zgPPXXejidzFWZcxVyF3AJH6Pr9br6Xisdww1r1 --output "{$HOME}/Library/Application\ Support/ZcashParams"
   - curl -O https://bootstrap.pypa.io/get-pip.py
   - sudo python3 get-pip.py
