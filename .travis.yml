@@ -20,7 +20,7 @@ install:
   - ls -Alth "$HOME/Library/Application Support/ZcashParams"
   - curl -O https://bootstrap.pypa.io/get-pip.py
   - sudo python3 get-pip.py
-  - sudo pip3 install pyblake2 pyzmq
+  - sudo pip3 install pyblake2 pyzmq simplejson
 cache:
   directories:
     - "$HOME/Library/Application Support/ZcashParams"
