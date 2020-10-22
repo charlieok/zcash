@@ -52,3 +52,28 @@ jobs:
         - ./qa/zcash/full_test_suite.py $TEST_TARGET
       env:
        -TEST_TARGET=sec-hard
+    - name: "no-dot-so"
+      script:
+        -./qa/zcash/full_test_suite.py $TEST_TARGET
+      env:
+      - TEST_TARGET=no-dot-so
+    - name: "util-test"
+      script:
+        -./qa/zcash/full_test_suite.py $TEST_TARGET
+      env:
+        - TEST_TARGET=no-dot-so
+    - name: "secp256k1"
+      script:
+        -./qa/zcash/full_test_suite.py $TEST_TARGET
+      env:
+        - TEST_TARGET=secp256k1
+    - name: "univalue"
+      script:
+        -./qa/zcash/full_test_suite.py $TEST_TARGET
+      env:
+        - TEST_TARGET=univalue
+    - name: "rust-test"
+      script:
+        -./qa/zcash/full_test_suite.py $TEST_TARGET
+      env:
+        - TEST_TARGET=rust-test
