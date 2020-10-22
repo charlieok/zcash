@@ -33,6 +33,7 @@ cache:
 jobs:
   include:
     - stage: test
+      name: "rpc"
       script:
         - echo $TRAVIS_BUILD_DIR
         - python3 --version
