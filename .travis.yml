@@ -37,6 +37,7 @@ jobs:
         - echo $TRAVIS_BUILD_DIR
         - python3 --version
         - pip3 list | grep simplejson
+        - ./qa/zcash/full_test_suite.py $TEST_TARGET
       env:
         - TEST_TARGET=rpc
     - script:
