@@ -21,12 +21,12 @@ install:
   - curl -O https://bootstrap.pypa.io/get-pip.py
   - sudo python3 get-pip.py
   - sudo pip3 install pyblake2 pyzmq simplejson
+  - make -C ./depends
+  - ./zcutil/build.sh -j2
+
 cache:
   directories:
     - "$HOME/Library/Application Support/ZcashParams"
-script:
-  - make -C ./depends
-  - ./zcutil/build.sh -j2
 
 jobs:
   include:
