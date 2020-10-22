@@ -39,7 +39,7 @@ jobs:
         - pip3 list | grep simplejson
       env:
         - TEST_TARGET=rpc
-      script:
+    - script:
         - echo $TRAVIS_BUILD_DIR
         - pwd
         - ls -Alth
