@@ -44,7 +44,6 @@ jobs:
     - name: "btest"
       script:
         - ./qa/zcash/full_test_suite.py $TEST_TARGET
-      name: "btest"
       env:
         - TEST_TARGET=btest
     - name: "sec-hard"
