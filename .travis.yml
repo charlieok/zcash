@@ -1,0 +1,26 @@
+os: debian
+addons:
+  apt:
+    packages:
+      - build-essential
+      - pkg-config
+      - libc6-dev
+      - m4
+      - g++-multilib
+      - autoconf
+      - libtool
+      - ncurses-dev
+      - unzip
+      - git
+      - python3
+      - python3-zmq
+      - zlib1g-dev
+      - curl
+      - bsdmainutils
+      - automake
+      - libtinfo5
+install:
+  - ./zcutil/clean.sh
+
+script:
+  - HOST=x86_64-w64-mingw32 ./zcutil/build.sh -j$(nproc)
