@@ -1,5 +1,5 @@
-os: linux
-dist: stretch
+os: debian
+dist: buster
 addons:
   apt:
     packages:
