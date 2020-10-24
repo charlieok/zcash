@@ -1,5 +1,5 @@
-os: debian
-dist: buster
+os: ubuntu
+dist: focal
 addons:
   apt:
     packages:
