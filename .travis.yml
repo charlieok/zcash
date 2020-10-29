@@ -23,7 +23,7 @@ install:
   - sudo python3 get-pip.py
   - sudo pip3 install pyblake2 pyzmq simplejson
   - make -C ./depends
-  - ./zcutil/build.sh -j2
+  - ./zcutil/build.sh
 
 cache:
   directories:
