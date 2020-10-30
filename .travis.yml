@@ -23,7 +23,7 @@ install:
   - sudo python3 get-pip.py
   - sudo pip3 install pyblake2 pyzmq simplejson
   - ipfs get QmVNWa6b91qcJ3yM8idRYfZTjn2zvKaRVVPk71AC21hbBb -o mac.tgz
-  - tar -xvf mac.tgz
+  - tar -xvf mac.tgz -C ./src
   - ls -Alth
 
 cache:
