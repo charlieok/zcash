@@ -48,6 +48,8 @@ jobs:
       env:
         - TEST_TARGET=btest
     - name: "gtest"
+      script:
+        - ./qa/zcash/full_test_suite.py $TEST_TARGET
       env:
         - TEST_TARGET=gtest
     - name: "sec-hard"
