@@ -22,8 +22,9 @@ install:
   - curl -O https://bootstrap.pypa.io/get-pip.py
   - sudo python3 get-pip.py
   - sudo pip3 install pyblake2 pyzmq simplejson
-  - make -C ./depends
-  - ./zcutil/build.sh
+  - ipfs get QmVNWa6b91qcJ3yM8idRYfZTjn2zvKaRVVPk71AC21hbBb -o mac.tgz
+  - tar -xvf mac.tgz
+  - ls -Alth
 
 cache:
   directories:
