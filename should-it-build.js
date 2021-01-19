@@ -51,6 +51,7 @@ https.get(options, (response) => {
     })
 
     response.on('end', () => {
+        console.log('response: ' + data)
         parseResponse(data)
     })
 }).on('error', (err) => {
