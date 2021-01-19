@@ -12,7 +12,7 @@ addons:
       - ipfs
 before_install:
   - echo Running before_install
-  - exit 1
+  - node ./should-it-build.js $TRAVIS_PULL_REQUEST
 install:
   - echo $TRAVIS_BUILD_DIR
   - brew list
