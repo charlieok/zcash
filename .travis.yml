@@ -10,6 +10,9 @@ addons:
       - libtool
       - coreutils
       - ipfs
+before_install:
+  - echo Running before_install
+  - exit 1
 install:
   - echo $TRAVIS_BUILD_DIR
   - brew list
