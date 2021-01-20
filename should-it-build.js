@@ -5,6 +5,8 @@ const ciEnabledLabelId = 861719997
 // Example Github API Pull Request URL - 'https://github.com/charlieok/zcash/pull/566'
 const pullRequestId = process.argv[2]
 
+const github_auth_token = process.env.github_auth_token || 'token_not_found';
+
 if (!pullRequestId) {
     console.log('Missing argument: pull request id')
     process.exit(1)
@@ -17,6 +19,7 @@ const options = {
     path: pullRequestUrl,
     method: 'GET',
     headers: {
+        'Authorization': `token ${github_auth_token}`,
         'User-Agent': 'node/https'
     }
 }
