@@ -1,7 +1,7 @@
 'use strict'
 
 const https = require('https')
-const ciEnabledLabelId = 861719997
+const ciEnabledLabelName = 'ok-to-test'
 // Example Github API Pull Request URL - 'https://github.com/charlieok/zcash/pull/566'
 const pullRequestId = process.argv[2]
 
@@ -37,7 +37,7 @@ const parseResponse = (res) => {
         console.error(err)
         process.exit(1)
     }
-    const ciEnabledLabel = labels.find(item => item.id === ciEnabledLabelId)
+    const ciEnabledLabel = labels.find(item => item.name === ciEnabledLabelName)
     if (ciEnabledLabel) {
         console.log(`CI enabled label found on PR ${pullRequestId}`)
         process.exit(0)
