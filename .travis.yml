@@ -10,9 +10,6 @@ addons:
       - libtool
       - coreutils
       - ipfs
-before_install:
-  - echo Running before_install
-  - node ./should-it-build.js $TRAVIS_PULL_REQUEST
 install:
   - echo $TRAVIS_BUILD_DIR
   - brew list
