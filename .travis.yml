@@ -1,0 +1,19 @@
+os: osx
+osx_image: xcode12.2
+addons:
+  homebrew:
+    packages:
+      - git
+      - pkg-config
+      - automake
+      - autoconf
+      - libtool
+      - coreutils
+      - ipfs
+install:
+  - echo $TRAVIS_BUILD_DIR
+  - curl -O https://bootstrap.pypa.io/get-pip.py
+  - sudo python3 get-pip.py
+  - sudo pip3 install pyblake2 pyzmq simplejson
+  - make -C ./depends
+  - ./zcutil/build.sh
